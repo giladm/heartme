@@ -1,19 +1,16 @@
 // BloodTestCategory - get test name and result, load dataset, anyalyze and return ok or not
 // 
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { AppStateAction, AppStateContext, AppContextType } from '../types/AppStateContext';
+import { AppStateContext, AppContextType } from '../types/AppStateContext';
 import { getWebserviceURL } from '../webservice/WebServiceCall' 
-import { BloodTestConfigEntity, BloodTestType, InputBloodTestType } from '../types/InterfaceTypes';
+import { BloodTestConfigEntity, BloodTestType } from '../types/InterfaceTypes';
 
 // for timestamp debugging 
 import { logger } from "react-native-logs";
 const console = logger.createLogger({
-  levels: { log: 0, warn: 2, error: 3 }, transportOptions: {
-    colors: "ansi"
-  }
-});
+  levels: { log: 0, warn: 2, error: 3 }, transportOptions: {colors: "ansi"}});
 
 export const BloodTestCategory = ({ updateMain }) => {
 
@@ -26,19 +23,16 @@ export const BloodTestCategory = ({ updateMain }) => {
   const [categoryPass, setCategoryPass] = useState<boolean>();
 
   React.useEffect(() => {
+    // update app state
     setTestCategoryIdx(-1);
     setUserLoaded(false);
+    updateMain('');
+    // 
     if (userTestInput !== undefined && userTestInput.TestName.length >0) {
-      // console.log('*** cardlist() has changed. userId:', userTestInput);
       const getDataset = async () => {
         try {
           appContext.updateLoading(true);
-          // const input: BloodTestType = await getWebserviceURL();
-          const input:BloodTestType =JSON.parse(`{"bloodTestConfig":[  
-            {"name":"LDL Cholesterol","threshold":100 },
-            {  "name":"A1C","threshold":4},
-            {  "name":"HDL Cholesterol","threshold":40 }
-          ]}`);
+          const input: BloodTestType = await getWebserviceURL();
 
           setOriginalDataset(input.bloodTestConfig);
           const lowerCaseInput: BloodTestConfigEntity[] = [];
@@ -47,15 +41,16 @@ export const BloodTestCategory = ({ updateMain }) => {
           if (lowerCaseInput.length > 0) {
             checkDatasetForTestInput(lowerCaseInput);
             setUserLoaded(true);
-            // updateMain({ length: newArray.length, noData: false }); // display total questions and valid data
           } else {
-            updateMain({ length: 0, noData: true }); // display something to that notion
-            console.log('No data found on s3:',input);
+            const message = 'No dataset found on the network: '+ JSON.stringify(input);
+            updateMain(message); // display something to that notion
+            console.log(message);
           }
           appContext.updateLoading(false);
         } catch (error) {
           appContext.updateLoading(false);
-          console.warn('error in app' + error);
+          console.error('error in app' + error);
+          updateMain(error)
         }
       }
       getDataset();
@@ -70,9 +65,9 @@ export const BloodTestCategory = ({ updateMain }) => {
     var countIdxArray: number[] = Array(dataset.length).fill(0); // count the number of words found in each category
     arrayOfTestInput.some(function (elUser) {
       dataset.forEach((elDataset,testIdx) => {
-        // if (elDataset.name.includes(elUser)) {
-        if (new RegExp("\\b"+elUser+"\\b").test(elDataset.name)) {
-          console.log(testIdx,'found input:',elUser,'in dataset:',elDataset);
+        // check each word from the user input against the dataset
+        if (new RegExp("\\b"+elUser+"\\b").test(elDataset.name) && elUser.length>0) {
+          console.log(testIdx,'found input:['+elUser+'] in dataset:',elDataset);
           
           if (foundIdxArray.indexOf(testIdx) >=0 ) {
             console.log('already found', elUser,' in ', dataset[testIdx]);
@@ -90,7 +85,8 @@ export const BloodTestCategory = ({ updateMain }) => {
       var idxMax = countIdxArray.reduce((iMax, x, i, arr) => (x != null && x > arr[iMax]) ? i : iMax, 0);
       setCategoryPass(userTestInput.TestResult < dataset[idxMax].threshold ? true : false)
       setTestCategoryIdx(idxMax);
-      console.log('Found catefory:', dataset[idxMax],'matching user input at index:',idxMax);
+      console.log('Found catefory:', dataset[idxMax],'matching user input at index:',idxMax,
+             'result:',userTestInput.TestResult);
     } else {
       setTestCategoryIdx(-1); //
       console.log('Did not find any category matching user input', countIdxArray);

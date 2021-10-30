@@ -42,7 +42,7 @@ export const getWebserviceURL = (): Promise<BloodTestType> => {
               return;
             }
             const parsedJson: BloodTestType = JSON.parse(keepResponse);
-            console.log('JSON parse success for request URL:', AppConfig.baseUrl + targetURL);
+            console.log('JSON parse success for request URL:'+ targetURL);
             resolve(parsedJson);
           } catch {
             const rejectMsg = 'xJSON parse error for Response: ' + JSON.stringify(keepResponse);
@@ -51,10 +51,9 @@ export const getWebserviceURL = (): Promise<BloodTestType> => {
           }
         })
         .catch((err) => {
-          console.log('******* response status:', responseStatus);
-          console.error('getWebserviceURL() error:', err, 'for URL:', AppConfig.baseUrl + targetURL );
-          console.log('keepResponse: ', keepResponse);
-          reject('Check above response for possible error. ' + err);
+          console.error('*** getWebserviceURL() ** response status:', responseStatus, 'keepResponse: ', keepResponse);
+          const rejError = err+ ' for URL:' + targetURL ;
+          reject(rejError);
         });
     } catch (error) {
       const rejectMsg = 'Reject error: [' + error + '] Response: ' + keepResponse;

@@ -3,13 +3,9 @@ import React, { useContext, useState } from 'react';
 import { AppStateAction, AppStateContext, AppContextType } from '../types/AppStateContext';
 import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
 import { Colors } from '../constants/Colors';
-import { logger } from "react-native-logs";
 import { InputBloodTestType } from '../types/InterfaceTypes';
 
 export const InputBloodTest = () => {
-  const console = logger.createLogger({
-    levels: { log: 0, warn: 2, error: 3 }, transportOptions: { colors: "ansi" }
-  });
   const appContext: AppContextType = useContext(AppStateContext);
   const [testName, setTestName] = useState('');
   const [testResult, setTestResult] = useState<string|null>();
@@ -19,10 +15,8 @@ export const InputBloodTest = () => {
   React.useEffect(() => {
     if (testName === undefined || testResult === undefined) return;
     const stripText = testName.replace(pattern, "");
-    const stripNumber = testResult.replace(/\D\./g, '');
-    // console.log('after strip stripNumber:', stripNumber);
-
-    // todo parseFloat(stripNumber));
+    // strip the number from anything other than digits and period
+    const stripNumber = testResult.replace(/\D\./g, ''); 
     if (stripText.length > 0 && stripNumber.length> 0) setButtonDisabled(false);
     else setButtonDisabled(true);
   }, [testName,testResult]);
@@ -38,14 +32,14 @@ export const InputBloodTest = () => {
   };
 
   const processUserInput = () => {
-    // console.log('>> process user input[' + testName.trim() + ']');
+    // remove commas if user enter one in the result
     const stripNonDigit = testResult.replace(/\D\./g, '');
     const stripCommas = parseFloat(stripNonDigit.replace(/,/g, ''));
-    // console.log('stripCommas', stripCommas);
     const testInput: InputBloodTestType = {TestName: testName, TestResult: stripCommas}
     appContext.changeAppState(AppStateAction.ChangeUserInput, {value: testInput});
   };
-  const testResultRef: any = React.useRef();
+  // use the reference to move from one entry field to the next
+  const testResultRef: any = React.useRef(); 
 
   return (
     <>

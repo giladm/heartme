@@ -11,17 +11,12 @@ import { AppStateContext, AppContextType } from '../types/AppStateContext';
 export const MainScreen = () => {
   const appContext: AppContextType = useContext(AppStateContext);
   const isDbLoading: boolean = appContext.isLoading; // when using rest api
-  const [totalQuestion, setTotalQuestion] = useState<number>();
-  const [noData, setNoData] = useState(false);
+  const [bottomMsg, setBottomMsg] = useState(false);
 
-  const updateMain = (update) => {
-    console.log('> > updateMain :', update);
-    setTotalQuestion(update.length); // total of questions
-    setNoData(update.noData); // any data for user
+  const updateMain = (message) => {
+    console.log('> > updateMain :', message);
+    setBottomMsg(message); // bottom message 
   }
-  const Separator = () => (
-    <View style={styles.separator} />
-  );
 
   return (
     <>
@@ -31,9 +26,11 @@ export const MainScreen = () => {
         <View style={styles.BottomViewArea}>
           {isDbLoading ?
             (<View style={styles.indicatorPosition}>
-              <Text style={[styles.indicatorText, { color: 'blue' }]}>Loading Data...</Text>
-              <WaveIndicator color={'blue'} size={80} />
-            </View>) : null}
+              <Text style={styles.indicatorText}>Loading Data...</Text>
+              <WaveIndicator color={'blue'} size={60} />
+            </View>) : 
+            <Text style={styles.bottomText}>{bottomMsg}</Text>
+            }
         </View>
       </SafeAreaView>
     </>
@@ -59,20 +56,21 @@ const styles = StyleSheet.create({
   },
   indicatorPosition: {
     flex: 1,
-    paddingBottom: 100,
+    paddingBottom: 10,
   },
   indicatorText: {
     fontSize: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    color: 'white' ,
+  },
+  bottomText: {
+    fontSize: 10,
+    flexDirection: 'column',
+    color: 'white',
   },
   title: {
     textAlign: 'center',
     marginVertical: 8,
-  },
-  separator: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
