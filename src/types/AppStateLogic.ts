@@ -1,4 +1,4 @@
-// AppStateLogic - Manage the state of the user's selection
+// AppStateLogic - Manage the state of the user's input
 import { useReducer } from 'react';
 import { AppContextType, AppStateAction, AppStateValueType } from './AppStateContext';
 import { InputBloodTestType } from './InterfaceTypes';
@@ -6,7 +6,6 @@ import { InputBloodTestType } from './InterfaceTypes';
 // App state 
 interface IApplicationState {
   inputBloodTest: InputBloodTestType;
-  errorMessage: string;
   isLoading: boolean;
 }
 // Change the app state base on user selection
@@ -21,11 +20,6 @@ export function AppStateLogic(): AppContextType {
             ...prevState,
             inputBloodTest: action.value.value,
           }
-        case AppStateAction.UpdateErrorMessage:
-          return {
-            ...prevState,
-            errorMessage: action.value,
-          }
         case AppStateAction.LoadingUpdate:
           return {
             ...prevState,
@@ -35,7 +29,6 @@ export function AppStateLogic(): AppContextType {
     },
     {
       inputBloodTest: { TestName: '', TestResult: null },
-      errorMessage: '',
       isLoading: false,
     }
   );
