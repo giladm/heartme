@@ -14,7 +14,6 @@ export const MainScreen = () => {
   const [bottomMsg, setBottomMsg] = useState(false);
 
   const updateMain = (message) => {
-    console.log('> > updateMain :', message);
     setBottomMsg(message); // bottom message 
   }
 
