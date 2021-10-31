@@ -1,7 +1,7 @@
 //InputBloodTest - 
 import React, { useContext, useState } from 'react';
 import { AppStateAction, AppStateContext, AppContextType } from '../types/AppStateContext';
-import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Keyboard } from 'react-native';
 import { Colors } from '../constants/Colors';
 import { InputBloodTestType } from '../types/InterfaceTypes';
 
@@ -33,9 +33,10 @@ export const InputBloodTest = () => {
 
   const processUserInput = () => {
     // remove commas if user enter one in the result
-    const stripNonDigit = testResult.replace(/\D\./g, '');
+    const stripNonDigit = testResult.replace(/\D/g, '');
     const stripCommas = parseFloat(stripNonDigit.replace(/,/g, ''));
     const testInput: InputBloodTestType = {TestName: testName, TestResult: stripCommas}
+    Keyboard.dismiss();
     appContext.changeAppState(AppStateAction.ChangeUserInput, {value: testInput});
   };
   // use the reference to move from one entry field to the next
