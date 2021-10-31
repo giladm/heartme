@@ -1,6 +1,6 @@
 # Am I Ok?  
   
-	### Evaluate User's Blood Test Results  
+### Evaluate User's Blood Test Results  
 #### Usage  
 To compile and run the app on an android device do the following:  
 - $ clone the repository  
