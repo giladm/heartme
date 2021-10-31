@@ -87,6 +87,7 @@ export const BloodTestCategory = ({ updateMain }) => {
       setTestCategoryIdx(idxMax);
       console.log('Found catefory:', dataset[idxMax],'matching user input at index:',idxMax,
              'result:',userTestInput.TestResult);
+      updateMain('Evaluated result: ' + userTestInput.TestResult + ' against threshold: ' + dataset[idxMax].threshold);
     } else {
       setTestCategoryIdx(-1); //
       console.log('Did not find any category matching user input', countIdxArray);
